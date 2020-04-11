@@ -10,8 +10,14 @@
 /* return the smallest of the elements in array x[]
  * there are n elements in x[] (x[0].. x[n-1])
  */
+
+
 int minIt(int x[], int n) {
-    return 0;
+    int minimum = x[0];
+    for(int i = 0; i < n; i++) {
+        if(minimum > x[i]) minimum = x[i];
+    }
+    return minimum;
 }
 
 /* return the smallest of the elements in array x[]
@@ -19,8 +25,19 @@ int minIt(int x[], int n) {
  * solve the problem recursively and 
  * use an "n-1" type of decomposition
  */
+
+int minRec1Helper(int x[], int n, int current_min) {
+    if(n == 0) return current_min;
+    else if(current_min > x[n-1]) minRec1Helper(x, n-1, x[n-1]);
+    else if(current_min <= x[n-1]) minRec1Helper(x, n-1, current_min);
+    else {
+        printf("Something went wrong\n");
+        return 0;
+    }
+}
+
 int minRec1(int x[], int n) {
-    return 0;
+    return minRec1Helper(x, n - 1, x[n-1]);
 }
 
 /*
@@ -30,8 +47,12 @@ int minRec1(int x[], int n) {
  * solve the problem recursively and 
  * use an "n / 2" type of decomposition
  */
+
+
+
 int minRec2(int x[], int n) {
-    return 0;
+
+    return ;
 }
 
 
