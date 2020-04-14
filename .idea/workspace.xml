@@ -10,7 +10,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ef0e82d1-ccc3-4978-bf70-093f8456c005" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project6.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Project6.cpp" afterDir="false" />
     </list>
@@ -49,10 +48,17 @@
       <option name="presentableId" value="Default" />
       <updated>1586619672681</updated>
       <workItem from="1586619674001" duration="3065000" />
+      <workItem from="1586818008162" duration="16089000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="413" y="216" width="672" height="678" key="search.everywhere.popup" timestamp="1586839093972">
+      <screen x="0" y="0" width="1500" height="1000" />
+    </state>
+    <state x="413" y="216" width="672" height="678" key="search.everywhere.popup/0.0.1500.1000/3000.0.1920.1080@0.0.1500.1000" timestamp="1586839093972" />
   </component>
 </project>

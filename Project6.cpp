@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <math.h>
 #include "MazeParams.h"
 #include "Recursion.h"
 
@@ -48,11 +49,28 @@ int minRec1(int x[], int n) {
  * use an "n / 2" type of decomposition
  */
 
+int compare(int a, int b) {
+    if(a < b) return a;
+    else return b;
+}
 
+int minRec2Helper(int x[], int n, int min, int max) {
+    if(n == 1) return x[min];
+    if(n == 2) {
+        return compare(x[min], x[max]);
+    }
+    int middle = (min + max)/2;
+    int lower = minRec2Helper(x, n/2, min, middle - 1);
+    int upper = minRec2Helper(x, n/2, middle, max);
+    return compare(lower, upper);
+}
 
 int minRec2(int x[], int n) {
+    if(n == 1) return x[0];
 
-    return ;
+    int lower = minRec2Helper(x, n/2, 0, n/2 - 1);
+    int upper = minRec2Helper(x, n/2, n/2, n - 1);
+    return compare(lower, upper);
 }
 
 
@@ -68,8 +86,34 @@ int minRec2(int x[], int n) {
  * you're required to calculate the answer to 15 decimal digits of
  * accuracy.
  */
+
+double squared(double a) return a * a;
+
 double sqrtIt(double x, double low_guess, double high_guess) {
-    return 0;
+    if(x >= 1.0) {
+        for(double i = 1; i < x/2; i++) {
+            if(squared(i) < x && squared(i+1)) {
+                low_guess = i;
+                high_guess =  i+1.0;
+            }
+        }
+    }
+    else {
+        low_guess = 0;
+        high_guess = 1;
+    }
+    double exactness_factor = 1;
+    for(int i = 0; i < 15; i++) {
+        exactness_factor /= 10;
+        for(int j = low_guess; j <= high_guess; j+=exactness_factor) {
+            if(squared(j) < x && squared(j + exactness_factor) > x) {
+                low_guess = j;
+                high_guess = j + exactness_factor;
+                break;
+            }
+        }
+    }
+    return low_guess;
 }
 
 /*
@@ -84,8 +128,20 @@ double sqrtIt(double x, double low_guess, double high_guess) {
  * you're required to calculate the answer to 15 decimal digits of
  * accuracy.
  */
+
+double sqrtRecHelper(double x, double low_guess, double high_guess, double exactness_factor) {
+    if(exactness_factor == -15 && squared(low_guess) < x && squared(high_guess) > x) return low_guess;
+    if(squared(low_guess) < x && squared(high_guess) > x) sqrtRecHelper(x,
+            low_guess, high_guess, exactness_factor - 1);
+    else {
+        if(squared(low_guess) < x && squared(high_guess) > x) sqrtRecHelper(x,
+                low_guess + pow(10, exactness_factor), high_guess + pow(10, exactness_factor), exactness_factor);
+    }
+
+}
+
 double sqrtRec(double x, double low_guess, double high_guess) {
-    return 0;
+    return sqrtRecHelper(x, low_guess, high_guess, (double) (int) pow(x, 1/10));
 }
 
 
@@ -103,7 +159,26 @@ double sqrtRec(double x, double low_guess, double high_guess) {
  *   and k is less than the length of str1 and str2
  */
 
+int whatLetter(char c) {
+    if (c < 'A') { return -1; }
+    if (c > 'z') { return -1; }
+    if (c > 'Z' && c < 'a') { return -1; }
+    return c & ~32 - 64;
+}
+
 int strCompare(char* str1, char* str2) {
+    int i1 = 0;
+    int i2 = 0;
+    while(str2[i2] != 0 && str1[i1] != 0) {
+        if(whatLetter(str1[i1]) == -1) i1++;
+        else if(whatLetter(str2[i2]) == -1) i2++;
+        else if(whatLetter(str1[i1]) > whatLetter(str2[i2])) return 1;
+        else if(whatLetter(str1[i1]) < whatLetter(str2[i2])) return -1;
+        else {
+            i1++;
+            i2++;
+        }
+    }
     return 0;
 }
 
@@ -114,12 +189,7 @@ int strCompare(char* str1, char* str2) {
  *
  * This code is rather ugly as I'm exploiting some detailed knowledge of the ASCII table
  */
-int whatLetter(char c) {
-    if (c < 'A') { return -1; }
-    if (c > 'z') { return -1; }
-    if (c > 'Z' && c < 'a') { return -1; }
-    return c & ~32 - 64;
-}
+
 
 /*
  * same as before, only this time 
@@ -129,8 +199,18 @@ int whatLetter(char c) {
  * strCompare2("The plane!", "theater") should return 1 since "theplane" is larger than "theater"
  * once again, you can only use recursion, no loops
  */
+
+int strCompare2Helper(char* str1, char* str2, int i1, int i2) {
+    if(str2[i2] != 0 && str1[i1] != 0) return 0;
+    if(whatLetter(str1[i1]) == -1) strCompare2Helper(str1, str2, i1 + 1, i2);
+    if(whatLetter(str2[i2]) == -1) strCompare2Helper(str1, str2, i1, i2 + 1);
+    if(whatLetter(str1[i1]) == whatLetter(str2[i2])) strCompare2Helper(str1, str2, i1 + 1, i2 + 1 );
+    else if(whatLetter(str1[i1]) > whatLetter(str2[i2])) return 1;
+    else if(whatLetter(str1[i1]) < whatLetter(str2[i2])) return -1;
+}
+
 int strCompare2(char* str1, char* str2) {
-    return 0;
+    return strCompare2Helper(str1, str2, 0, 0);
 }
 
 
@@ -193,6 +273,7 @@ int strCompare2(char* str1, char* str2) {
  */
 
 int solveMazeRec(int row, int col) {
+
     return 0;
 }
 
@@ -321,13 +402,63 @@ void solveMazeIt(int row, int col) {
 }
 
 
+
+
+//Martian changeHelper1(Martian m, int cents) {
+//    if(cents == 0) return m;
+//    else if(cents/5 + cents %5 < cents/12 + (cents%12)/5 + (cents%12)%5) {
+//        int num_nickels = (cents - (cents % 5)) / 5;
+//        m.nicks = num_nickels;
+//        changeHelper1(m, cents % 5);
+//    }
+//    else if(cents >= 12) {
+//        int num_dodeks = (cents - (cents % 12)) / 12;
+//        m.dodeks = num_dodeks;
+//        changeHelper1(m, cents%12);
+//    }
+//    else if(cents > 0 && cents < 5) {
+//        m.pennies = cents;
+//        return m;
+//    }
+//}
+
+
+Martian changeHelper2(Martian m, int cents, int nick_val, int dodek_val) {
+    int condition1 = (cents - (cents%nick_val))/nick_val +
+            cents %nick_val;
+    int condition2 = (cents - (cents%dodek_val))/dodek_val +
+            (cents%dodek_val - (cents%dodek_val)%nick_val)/nick_val +
+            (cents%dodek_val)%nick_val;
+    if(cents == 0) return m;
+    else if(condition1 < condition2) {
+        int num_nickels = (cents - (cents % nick_val)) / nick_val;
+        m.nicks = num_nickels;
+        changeHelper2(m, cents % nick_val, nick_val, dodek_val);
+    }
+    else if(cents >= dodek_val) {
+        int num_dodeks = (cents - (cents % dodek_val)) / dodek_val;
+        m.dodeks = num_dodeks;
+        changeHelper2(m, cents % dodek_val, nick_val, dodek_val);
+    }
+    else if(cents > 0 && cents < nick_val) {
+        m.pennies = cents;
+        return m;
+    }
+}
+
 /*
  * using recursion, with no loops or globals, write a function that calculates the optimal
  * (fewest total coins) change for a given amount of money. Return a Martian struct that indicates
  * this optimal collection of coins.
  */
+
 Martian change(int cents) {
-    return Martian{}; // delete this line, it's broken. Then write the function properly!
+    Martian m;
+    m.nicks = 0;
+    m.dodeks = 0;
+    m.pennies = 0;
+    return changeHelper2(m, cents, 5, 12);
+
 }
 
 /*
@@ -338,8 +469,15 @@ Martian change(int cents) {
  * If you've really mastered thinking recursively, then this version of the 
  * martian change problem is just as easy as the concrete version 
  */
+
+
+
 Martian change(int cents, int nick_val, int dodek_val) {
-    return Martian{}; // delete this line, it's broken. Then write the function properly!
+    Martian m;
+    m.nicks = 0;
+    m.dodeks = 0;
+    m.pennies = 0;
+    return changeHelper2(m, cents, nick_val, dodek_val);
 }
 
 /* 
