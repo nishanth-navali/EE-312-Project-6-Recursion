@@ -1,3 +1,11 @@
+// Recursion <Project6.cpp>
+// EE 312 Project 6 submission by
+// <Nishanth Navali >
+// <nan686>
+// Slip days used: <0>
+// Spring 2020
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "MazeParams.h"
@@ -244,52 +252,52 @@ int main(void) {
     printf("the sqrt of 26 is %g\n", sqrtRec(26.0, 0, 26.0));
     printf("the sqrt of 2 is %g\n", sqrtRec(2.0, 0, 2.0));
 
-    /* test strCompare */
+//    /* test strCompare */
     char* s1; char* s2;
     s1 = "apple"; s2 = "apricot";
-    if (strCompare(s1, s2) < 0) { 
+    if (strCompare(s1, s2) < 0) {
         printf("\"%s\" is less than \"%s\", very good\n", s1, s2);
     } else {
         printf("oops, \"%s\" should be less than \"%s\"\n", s1, s2);
     }
-			
+
     s1 = "Apple"; s2 = "apple";
-    if (strCompare(s1, s2) < 0) { 
+    if (strCompare(s1, s2) < 0) {
         printf("\"%s\" is less than \"%s\", very good\n", s1, s2);
     } else {
         printf("oops, \"%s\" should be less than \"%s\"\n", s1, s2);
     }
 
     s1 = "baby boy"; s2 = "banana";
-    if (strCompare(s1, s2) < 0) { 
+    if (strCompare(s1, s2) < 0) {
         printf("\"%s\" is less than \"%s\", very good\n", s1, s2);
     } else {
         printf("oops, \"%s\" should be less than \"%s\"\n", s1, s2);
     }
 
     s1 = "a rather silly string"; s2 = "a rather silly string";
-    if (strCompare(s1, s2) == 0) { 
+    if (strCompare(s1, s2) == 0) {
         printf("\"%s\" is equal to \"%s\", very good\n", s1, s2);
     } else {
         printf("oops, \"%s\" should be equal to \"%s\"\n", s1, s2);
     }
 
     s1 = "12345"; s2 = "12345";
-    if (strCompare(s1, s2) == 0) { 
+    if (strCompare(s1, s2) == 0) {
         printf("\"%s\" is equal to \"%s\", very good\n", s1, s2);
     } else {
         printf("oops, \"%s\" should be equal to \"%s\"\n", s1, s2);
     }
 
     s1 = "Numbers: 12345"; s2 = "12345";
-    if (strCompare(s1, s2) > 0) { 
+    if (strCompare(s1, s2) > 0) {
         printf("\"%s\" is greater than \"%s\", very good\n", s1, s2);
     } else {
         printf("oops, \"%s\" should be greater than \"%s\"\n", s1, s2);
     }
 
     s1 = "Texas"; s2 = "California";
-    if (strCompare(s1, s2) > 0) { 
+    if (strCompare(s1, s2) > 0) {
         printf("\"%s\" is greater than \"%s\", very good\n", s1, s2);
     } else {
         printf("oops, \"%s\" should be greater than \"%s\"\n", s1, s2);
@@ -297,7 +305,7 @@ int main(void) {
 
     /* test strCompare2 */
     s1 = "apple"; s2 = "Apricot";
-    if (strCompare2(s1, s2) < 0) { 
+    if (strCompare2(s1, s2) < 0) {
         printf("\"%s\" is less than \"%s\", very good\n", s1, s2);
     } else {
         printf("oops, \"%s\" should be less than \"%s\"\n", s1, s2);
@@ -311,27 +319,27 @@ int main(void) {
     }
 
     s1 = "OMG, WTF?"; s2 = "oh my goodness, what the heck?";
-    if (strCompare2(s1, s2) > 0) { 
+    if (strCompare2(s1, s2) > 0) {
         printf("\"%s\" is greater than \"%s\", very good\n", s1, s2);
     } else {
         printf("oops, \"%s\" should be greater than \"%s\"\n", s1, s2);
     }
 
-    /* test maze */		
+    /* test maze */
     srand(magic_number);
     makeMaze();
     recodeMaze();
     printf("recursive solution to the maze\n");
-    solveMazeRec(0, start_col);	
+    solveMazeRec(0, start_col);
     printMaze();
     printf("\n\n\n");
-	
-    printf("iterative solution to the maze\n");
-    srand(magic_number);
-    makeMaze();
-    recodeMaze();
-    solveMazeIt(0, start_col);
-    printMaze();
+
+//    printf("iterative solution to the maze\n");
+//    srand(magic_number);
+//    makeMaze();
+//    recodeMaze();
+//    solveMazeIt(0, start_col);
+//    printMaze();
 
 
     /* test Martian */

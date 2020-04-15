@@ -55,8 +55,10 @@ int compare(int a, int b) {
 }
 
 int minRec2Helper(int x[], int n, int min, int max) {
-    if(n == 1) return x[min];
-    if(n == 2) {
+    if(min == max) {
+        return x[min];
+    }
+    if(min+1 == max) {
         return compare(x[min], x[max]);
     }
     int middle = (min + max)/2;
@@ -67,7 +69,6 @@ int minRec2Helper(int x[], int n, int min, int max) {
 
 int minRec2(int x[], int n) {
     if(n == 1) return x[0];
-
     int lower = minRec2Helper(x, n/2, 0, n/2 - 1);
     int upper = minRec2Helper(x, n/2, n/2, n - 1);
     return compare(lower, upper);
@@ -87,12 +88,14 @@ int minRec2(int x[], int n) {
  * accuracy.
  */
 
-double squared(double a) return a * a;
+double squared(double a) {
+    return a * a;
+}
 
 double sqrtIt(double x, double low_guess, double high_guess) {
     if(x >= 1.0) {
         for(double i = 1; i < x/2; i++) {
-            if(squared(i) < x && squared(i+1)) {
+            if(squared(i) <= x && squared(i+1) > x) {
                 low_guess = i;
                 high_guess =  i+1.0;
             }
@@ -100,15 +103,15 @@ double sqrtIt(double x, double low_guess, double high_guess) {
     }
     else {
         low_guess = 0;
-        high_guess = 1;
+        high_guess = 2;
     }
-    double exactness_factor = 1;
+    double exactness_factor = 1.0;
     for(int i = 0; i < 15; i++) {
         exactness_factor /= 10;
-        for(int j = low_guess; j <= high_guess; j+=exactness_factor) {
-            if(squared(j) < x && squared(j + exactness_factor) > x) {
-                low_guess = j;
-                high_guess = j + exactness_factor;
+        for(double j = 0; low_guess + (j + 1) * exactness_factor <= high_guess; j+=1) {
+            if(squared(low_guess + j * exactness_factor) <= x && squared(low_guess + (j + 1) * exactness_factor) > x) {
+                low_guess += j * exactness_factor;
+                high_guess = low_guess + (j + 1) * exactness_factor;
                 break;
             }
         }
@@ -130,18 +133,19 @@ double sqrtIt(double x, double low_guess, double high_guess) {
  */
 
 double sqrtRecHelper(double x, double low_guess, double high_guess, double exactness_factor) {
-    if(exactness_factor == -15 && squared(low_guess) < x && squared(high_guess) > x) return low_guess;
-    if(squared(low_guess) < x && squared(high_guess) > x) sqrtRecHelper(x,
-            low_guess, high_guess, exactness_factor - 1);
-    else {
-        if(squared(low_guess) < x && squared(high_guess) > x) sqrtRecHelper(x,
-                low_guess + pow(10, exactness_factor), high_guess + pow(10, exactness_factor), exactness_factor);
+    if(exactness_factor == -15 && squared(low_guess) <= x && squared(high_guess) > x) {
+        return low_guess;
     }
-
+    if(squared(low_guess) <= x && squared(low_guess + pow(10, exactness_factor)) > x) {
+        sqrtRecHelper(x, low_guess, low_guess + pow(10, exactness_factor), exactness_factor - 1);
+    }
+    else {
+            sqrtRecHelper(x, low_guess + pow(10, exactness_factor), high_guess, exactness_factor);
+    }
 }
 
 double sqrtRec(double x, double low_guess, double high_guess) {
-    return sqrtRecHelper(x, low_guess, high_guess, (double) (int) pow(x, 1/10));
+    return sqrtRecHelper(x, low_guess, high_guess, 0);
 }
 
 
@@ -166,20 +170,24 @@ int whatLetter(char c) {
     return c & ~32 - 64;
 }
 
-int strCompare(char* str1, char* str2) {
-    int i1 = 0;
-    int i2 = 0;
-    while(str2[i2] != 0 && str1[i1] != 0) {
-        if(whatLetter(str1[i1]) == -1) i1++;
-        else if(whatLetter(str2[i2]) == -1) i2++;
-        else if(whatLetter(str1[i1]) > whatLetter(str2[i2])) return 1;
-        else if(whatLetter(str1[i1]) < whatLetter(str2[i2])) return -1;
-        else {
-            i1++;
-            i2++;
-        }
+int strCompare1Helper(char* str1, char* str2, int i) {
+    if(str1[i] == 0 && str2[i] == 0) {
+        int x = 0;
+        return x;
     }
-    return 0;
+    else if(str1[i] == str2[i]) {
+        strCompare1Helper(str1, str2, i + 1);
+    }
+    else if(str1[i] > str2[i]) {
+        return 1;
+    }
+    else if(str1[i] < str2[i]) {
+        return (-1);
+    }
+}
+
+int strCompare(char* str1, char* str2) {
+    return strCompare1Helper(str1, str2, 0);
 }
 
 /*
@@ -200,13 +208,26 @@ int strCompare(char* str1, char* str2) {
  * once again, you can only use recursion, no loops
  */
 
+
 int strCompare2Helper(char* str1, char* str2, int i1, int i2) {
-    if(str2[i2] != 0 && str1[i1] != 0) return 0;
-    if(whatLetter(str1[i1]) == -1) strCompare2Helper(str1, str2, i1 + 1, i2);
-    if(whatLetter(str2[i2]) == -1) strCompare2Helper(str1, str2, i1, i2 + 1);
-    if(whatLetter(str1[i1]) == whatLetter(str2[i2])) strCompare2Helper(str1, str2, i1 + 1, i2 + 1 );
-    else if(whatLetter(str1[i1]) > whatLetter(str2[i2])) return 1;
-    else if(whatLetter(str1[i1]) < whatLetter(str2[i2])) return -1;
+    if(str2[i2] == 0 && str1[i1] == 0) {
+        return 0;
+    }
+    else if(whatLetter(str1[i1]) == -1) {
+        strCompare2Helper(str1, str2, i1 + 1, i2);
+    }
+    else if(whatLetter(str2[i2]) == -1) {
+        strCompare2Helper(str1, str2, i1, i2 + 1);
+    }
+    else if(whatLetter(str1[i1]) == whatLetter(str2[i2])) {
+        strCompare2Helper(str1, str2, i1 + 1, i2 + 1 );
+    }
+    else if(whatLetter(str1[i1]) > whatLetter(str2[i2])) {
+        return 1;
+    }
+    else if(whatLetter(str1[i1]) < whatLetter(str2[i2])) {
+        return -1;
+    }
 }
 
 int strCompare2(char* str1, char* str2) {
@@ -272,9 +293,74 @@ int strCompare2(char* str1, char* str2) {
  * along a path to the exit.
  */
 
-int solveMazeRec(int row, int col) {
+void adjacentCell(int row, int col, int dir, int* trow, int* tcol) {
+    *trow = row;
+    *tcol = col;
+    switch(dir) {
+        case 0: // UP
+            *trow = *trow - 1;
+            break;
+        case 1: // RIGHT
+            *tcol = *tcol + 1;
+            break;
+        case 2: // DOWN
+            *trow = *trow + 1;
+            break;
+        case 3: // LEFT
+            *tcol = *tcol - 1;
+            break;
+    }
+}
 
-    return 0;
+/*
+ * return false if there is a wall in the square for row and col
+ * return true if it's not a wall.
+ */
+int isOK(int row, int col) {
+    return (row > 0 && row < MATRIX_SIZE
+            && col > 0 && col < MATRIX_SIZE
+            && maze[row][col] == 0);
+}
+
+bool validMove(int row, int col) {
+    if(row > 0 && row < MATRIX_SIZE
+       && col > 0 && col < MATRIX_SIZE
+       && maze[row][col] == 0) {return true;}
+    else {return false;}
+}
+
+bool noValidMoves(int row, int col) {
+    return (validMove(row + 1, col)
+        || validMove(row - 1, col)
+        || validMove(row, col + 1)
+        || validMove(row, col - 1));
+}
+
+int solveMazeRec(int row, int col) {
+    if(row == MATRIX_SIZE - 1) {
+        maze[row][col] = 2;
+        return 1;
+    }
+    else{
+        maze[row][col] = 2;
+        if(validMove(row + 1, col) && solveMazeRec(row + 1, col)) {
+            return 1;
+        }
+        else if(validMove(row , col+1) && solveMazeRec(row, col + 1)) {
+            return 1;
+        }
+        else if(validMove(row , col-1) && solveMazeRec(row, col - 1)) {
+             return 1;
+        }
+        else if(validMove(row - 1, col) && solveMazeRec(row - 1, col)) {
+            return 1;
+        }
+        else {
+            maze[row][col] = 0;
+            return 0;
+        }
+    }
+
 }
 
 
@@ -303,35 +389,10 @@ int solveMazeRec(int row, int col) {
  *    direction yet (e.g., maze[trow][tcol] may be a wall!).  So, you set
  *    trow and tcol, and then check to see if it's OK to move there
  */
-void adjacentCell(int row, int col, int dir, int* trow, int* tcol) {
-    *trow = row;
-    *tcol = col;
-    switch(dir) {
-    case 0: // UP
-        *trow = *trow - 1;
-        break;
-    case 1: // RIGHT
-        *tcol = *tcol + 1;
-        break;
-    case 2: // DOWN
-        *trow = *trow + 1;
-        break;
-    case 3: // LEFT
-        *tcol = *tcol - 1;
-        break;
-    }
-}
 
 
-/* 
- * return false if there is a wall in the square for row and col
- * return true if it's not a wall.
- */
-int isOK(int row, int col) {
-    return (row > 0 && row < MATRIX_SIZE
-        && col > 0 && col < MATRIX_SIZE
-        && maze[row][col] != 1);
-}
+
+
 
 /*
  * return the value of the direction that is one turn to the right
@@ -394,9 +455,6 @@ void solveMazeIt(int row, int col) {
     int dir = 2; // 0 is up, 1 is right, 2 is down, 3 is left.
     maze[row][col] = 2; // drop a bread crumb in the starting square
     while (row < MATRIX_SIZE - 1) { // the exit is the only open square 
-        // in the last row
-
-        /* the rest of this loop is yours */
 
     }
 }
@@ -423,27 +481,26 @@ void solveMazeIt(int row, int col) {
 //}
 
 
-Martian changeHelper2(Martian m, int cents, int nick_val, int dodek_val) {
+void changeHelper2(Martian* m, int cents, int nick_val, int dodek_val) {
     int condition1 = (cents - (cents%nick_val))/nick_val +
-            cents %nick_val;
+            cents%nick_val;
     int condition2 = (cents - (cents%dodek_val))/dodek_val +
             (cents%dodek_val - (cents%dodek_val)%nick_val)/nick_val +
             (cents%dodek_val)%nick_val;
-    if(cents == 0) return m;
-    else if(condition1 < condition2) {
-        int num_nickels = (cents - (cents % nick_val)) / nick_val;
-        m.nicks = num_nickels;
-        changeHelper2(m, cents % nick_val, nick_val, dodek_val);
+    if(cents == 0) return;
+    else if(cents > 0 && cents < nick_val) {
+        m->pennies = cents;
+        return;
+    }
+    else if(condition1 <= condition2 && cents >= nick_val) {
+        m->nicks += 1;
+        changeHelper2(m, cents - nick_val, nick_val, dodek_val);
     }
     else if(cents >= dodek_val) {
-        int num_dodeks = (cents - (cents % dodek_val)) / dodek_val;
-        m.dodeks = num_dodeks;
-        changeHelper2(m, cents % dodek_val, nick_val, dodek_val);
+        m->dodeks += 1;
+        changeHelper2(m, cents - dodek_val, nick_val, dodek_val);
     }
-    else if(cents > 0 && cents < nick_val) {
-        m.pennies = cents;
-        return m;
-    }
+
 }
 
 /*
@@ -453,12 +510,12 @@ Martian changeHelper2(Martian m, int cents, int nick_val, int dodek_val) {
  */
 
 Martian change(int cents) {
-    Martian m;
-    m.nicks = 0;
-    m.dodeks = 0;
-    m.pennies = 0;
-    return changeHelper2(m, cents, 5, 12);
-
+    Martian* martian = (Martian*) malloc(sizeof(Martian));
+    martian->nicks = 0;
+    martian->dodeks = 0;
+    martian->pennies = 0;
+    changeHelper2(martian, cents, 5, 12);
+    return *martian;
 }
 
 /*
@@ -473,11 +530,12 @@ Martian change(int cents) {
 
 
 Martian change(int cents, int nick_val, int dodek_val) {
-    Martian m;
-    m.nicks = 0;
-    m.dodeks = 0;
-    m.pennies = 0;
-    return changeHelper2(m, cents, nick_val, dodek_val);
+    Martian* martian = (Martian*) malloc(sizeof(Martian));
+    martian->nicks = 0;
+    martian->dodeks = 0;
+    martian->pennies = 0;
+    changeHelper2(martian, cents, nick_val, dodek_val);
+    return *martian;
 }
 
 /* 
@@ -485,7 +543,7 @@ Martian change(int cents, int nick_val, int dodek_val) {
  * it's not too bad for the specific case of nick_value = 5 and dodek_value = 12
  */
 Martian changeIt(int cents) {
-    return Martian{}; // delete this line, it's broken. Then write the function properly!
+    return change(cents); // delete this line, it's broken. Then write the function properly!
 }
 
 /*
@@ -495,5 +553,5 @@ Martian changeIt(int cents) {
  * this is the problem for you!
  */
 Martian changeIt(int cents, int nick_value, int dodek_value) {
-    return Martian{}; // delete this line, it's broken. Then write the function properly!
+    return change(cents, nick_value, dodek_value); // delete this line, it's broken. Then write the function properly!
 }
